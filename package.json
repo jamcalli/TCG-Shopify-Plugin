@@ -35,7 +35,7 @@
     "ssr"
   ],
   "author": "your-name",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "dependencies": {
     "@fastify/auth": "^5.0.2",
     "@fastify/autoload": "^6.3.1",
