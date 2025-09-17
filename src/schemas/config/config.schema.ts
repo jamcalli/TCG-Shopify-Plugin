@@ -31,6 +31,17 @@ export const ConfigSchema = z.object({
   cookieSecured: z.boolean().optional(),
   sessionSecret: z.string().optional(),
 
+  // Shopify Configuration
+  shopifyApiKey: z.string().optional(),
+  shopifyClientSecret: z.string().optional(),
+  shopifyHostName: z.string().optional(),
+
+  // Redis Configuration
+  redisUrl: z.string().optional(),
+  redisHost: z.string().optional(),
+  redisPort: z.number().optional(),
+  redisPassword: z.string().optional(),
+
   // Application Settings
   _isReady: z.boolean().optional(),
 })

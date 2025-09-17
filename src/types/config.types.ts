@@ -42,6 +42,17 @@ export interface Config {
   cookieName: string
   cookieSecured: boolean
 
+  // Shopify Configuration
+  shopifyApiKey: string
+  shopifyClientSecret: string
+  shopifyHostName: string
+
+  // Redis Configuration
+  redisUrl: string
+  redisHost: string
+  redisPort: number
+  redisPassword: string
+
   // Application Settings
   allowIframes: boolean
   _isReady: boolean

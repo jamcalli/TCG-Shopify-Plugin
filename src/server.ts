@@ -14,7 +14,7 @@ async function init() {
   // Read request logging setting from env var (default: true)
   // Accept common falsy variants: false, 0, no, off (case-insensitive)
   const enableRequestLogging = !/^(\s*(false|0|no|off)\s*)$/i.test(
-    process.env.enableRequestLogging ?? '',
+    process.env.ENABLE_REQUEST_LOGGING ?? '',
   )
 
   const app = Fastify({

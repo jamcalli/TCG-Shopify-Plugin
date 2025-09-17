@@ -22,23 +22,28 @@ const schema = {
     baseUrl: {
       type: 'string',
       default: 'http://localhost',
+      envName: 'BASE_URL',
     },
     port: {
       type: 'number',
       default: 3003,
+      envName: 'PORT',
     },
     logLevel: {
       type: 'string',
       enum: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
       default: 'info',
+      envName: 'LOG_LEVEL',
     },
     closeGraceDelay: {
       type: 'number',
       default: 10000,
+      envName: 'CLOSE_GRACE_DELAY',
     },
     rateLimitMax: {
       type: 'number',
       default: 500,
+      envName: 'RATE_LIMIT_MAX',
     },
 
     // Database Configuration
@@ -46,50 +51,100 @@ const schema = {
       type: 'string',
       enum: ['sqlite', 'postgres'],
       default: 'postgres',
+      envName: 'DB_TYPE',
     },
     dbHost: {
       type: 'string',
       default: 'localhost',
+      envName: 'DB_HOST',
     },
     dbPort: {
       type: 'number',
       default: 5432,
+      envName: 'DB_PORT',
     },
     dbName: {
       type: 'string',
       default: 'tcg_shopify',
+      envName: 'DB_NAME',
     },
     dbUser: {
       type: 'string',
       default: 'postgres',
+      envName: 'DB_USER',
     },
     dbPassword: {
       type: 'string',
       default: '',
+      envName: 'DB_PASSWORD',
     },
     dbConnectionString: {
       type: 'string',
       default: '',
+      envName: 'DB_CONNECTION_STRING',
     },
 
     // Session Configuration
     cookieSecret: {
       type: 'string',
       default: generateSecret(),
+      envName: 'COOKIE_SECRET',
     },
     cookieName: {
       type: 'string',
       default: 'tcg_session',
+      envName: 'COOKIE_NAME',
     },
     cookieSecured: {
       type: 'boolean',
       default: false,
+      envName: 'COOKIE_SECURED',
+    },
+
+    // Shopify Configuration
+    shopifyApiKey: {
+      type: 'string',
+      default: '',
+      envName: 'SHOPIFY_API_KEY',
+    },
+    shopifyClientSecret: {
+      type: 'string',
+      default: '',
+      envName: 'SHOPIFY_CLIENT_SECRET',
+    },
+    shopifyHostName: {
+      type: 'string',
+      default: '',
+      envName: 'SHOPIFY_HOST_NAME',
+    },
+
+    // Redis Configuration
+    redisUrl: {
+      type: 'string',
+      default: '',
+      envName: 'REDIS_URL',
+    },
+    redisHost: {
+      type: 'string',
+      default: 'localhost',
+      envName: 'REDIS_HOST',
+    },
+    redisPort: {
+      type: 'number',
+      default: 6379,
+      envName: 'REDIS_PORT',
+    },
+    redisPassword: {
+      type: 'string',
+      default: '',
+      envName: 'REDIS_PASSWORD',
     },
 
     // Application Settings
     allowIframes: {
       type: 'boolean',
-      default: false,
+      default: true, // Enable for Shopify embedded apps
+      envName: 'ALLOW_IFRAMES',
     },
   },
 }
@@ -164,6 +219,44 @@ export default fp(
         if (!parsedConfig.dbUser || parsedConfig.dbUser.trim() === '') {
           throw new Error('dbUser is required when using PostgreSQL.')
         }
+      }
+    }
+
+    // Validate Redis configuration for security and consistency
+    const isUsingRedisUrl =
+      parsedConfig.redisUrl && parsedConfig.redisUrl.trim() !== ''
+
+    if (isUsingRedisUrl) {
+      // Basic validation of Redis URL format
+      const redisUrl = parsedConfig.redisUrl.trim()
+      if (
+        !redisUrl.startsWith('redis://') &&
+        !redisUrl.startsWith('rediss://')
+      ) {
+        throw new Error(
+          'Invalid Redis URL format. Must start with redis:// or rediss://',
+        )
+      }
+
+      // Warn if individual Redis fields are also set (potential conflict)
+      const hasIndividualFields =
+        (parsedConfig.redisHost && parsedConfig.redisHost !== 'localhost') ||
+        (parsedConfig.redisPort && parsedConfig.redisPort !== 6379) ||
+        (parsedConfig.redisPassword && parsedConfig.redisPassword.trim() !== '')
+
+      if (hasIndividualFields) {
+        fastify.log.warn(
+          'Both REDIS_URL and individual Redis connection fields are set. REDIS_URL will take precedence.',
+        )
+      }
+    } else {
+      // Using individual fields - validate host is set
+      if (!parsedConfig.redisHost || parsedConfig.redisHost.trim() === '') {
+        throw new Error('redisHost is required when not using REDIS_URL.')
+      }
+
+      if (parsedConfig.redisPort <= 0 || parsedConfig.redisPort > 65535) {
+        throw new Error('redisPort must be a valid port number (1-65535).')
       }
     }
 
