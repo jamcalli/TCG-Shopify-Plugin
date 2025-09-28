@@ -1,10 +1,11 @@
 #!/usr/bin/env tsx
 
 /**
- * Scryfall Card Database Importer
+ * Scryfall Card Database Updater
  *
- * Efficiently imports the complete Scryfall card database into PostgreSQL
+ * Daily sync script that efficiently updates the complete Scryfall card database
  * using streaming JSON parsing and bulk COPY operations for optimal performance.
+ * Designed for cron execution with zero-downtime atomic table swaps.
  */
 
 import { config } from 'dotenv'
@@ -31,7 +32,7 @@ async function main(): Promise<void> {
   const startTime = Date.now()
 
   try {
-    console.log('Importing Scryfall card database...')
+    console.log('Updating Scryfall card database...')
 
     await client.query(
       `CREATE TABLE ${tempTable} (LIKE mtg_cards INCLUDING ALL)`,
@@ -204,7 +205,7 @@ async function main(): Promise<void> {
     const swapDuration = Date.now() - swapStart
     const totalDuration = (Date.now() - startTime) / 1000
 
-    console.log('Import completed successfully')
+    console.log('Update completed successfully')
     console.log(`Cards imported: ${processed.toLocaleString()}`)
     console.log(
       `Import time: ${importDuration.toFixed(1)}s (${(processed / importDuration).toFixed(0)} cards/sec)`,
@@ -212,7 +213,7 @@ async function main(): Promise<void> {
     console.log(`Swap time: ${swapDuration}ms`)
     console.log(`Total time: ${totalDuration.toFixed(1)}s`)
   } catch (error) {
-    console.error('Import failed:', error)
+    console.error('Update failed:', error)
     try {
       await client.query(`DROP TABLE IF EXISTS ${tempTable}`)
       console.log('Cleaned up temporary table')
