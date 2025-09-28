@@ -288,7 +288,7 @@ export function createServiceLogger(
  * Build Pulsarr pino logger options based on environment configuration.
  *
  * Attempts to always enable file-based logging (rotating file stream); if file setup fails
- * the logger falls back to terminal output. When the environment variable `enableConsoleOutput`
+ * the logger falls back to terminal output. When the environment variable `ENABLE_CONSOLE_OUTPUT`
  * is not set to the string `'false'` (default: true) the function configures both a pretty
  * terminal stream and a rotating file stream (unless the file stream is `process.stdout`,
  * in which case terminal-only options are returned to avoid double-writing). When console output
@@ -297,13 +297,13 @@ export function createServiceLogger(
  * Note: request-level logging and log level are controlled elsewhere (Fastify configuration/server).
  *
  * Environment variables:
- * - enableConsoleOutput — `'false'` disables terminal output; any other value (or unset) enables it.
+ * - ENABLE_CONSOLE_OUTPUT — `'false'` disables terminal output; any other value (or unset) enables it.
  *
  * @returns PulsarrLoggerOptions configured for terminal, file, or combined output as described above.
  */
 export function createLoggerConfig(): PulsarrLoggerOptions {
   // Read from environment variables with sensible defaults
-  const enableConsoleOutput = process.env.enableConsoleOutput !== 'false' // Default true
+  const enableConsoleOutput = process.env.ENABLE_CONSOLE_OUTPUT !== 'false' // Default true
 
   // Only log setup message if console output is enabled
   if (enableConsoleOutput) {

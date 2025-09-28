@@ -26,22 +26,46 @@ cp .env.example .env
 
 Edit `.env` with your database credentials and other configuration:
 ```env
-# Database Configuration
-DATABASE_URL=postgresql://username:password@localhost:5432/tcg_shopify
+# Server Configuration
+PORT=3003
+BASE_URL=http://localhost
+CLOSE_GRACE_DELAY=10000
+RATE_LIMIT_MAX=500
+
+# Logging Configuration
+LOG_LEVEL=info
+ENABLE_REQUEST_LOGGING=true
+ENABLE_CONSOLE_OUTPUT=true
+
+# Database Configuration (PostgreSQL)
+DB_TYPE=postgres
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=tcg_shopify
-DB_USER=username
-DB_PASSWORD=password
-
-# Application Configuration
-NODE_ENV=development
-PORT=3000
-LOG_LEVEL=info
+DB_USER=postgres
+DB_PASSWORD=your_password_here
+# Alternative: Use connection string instead of individual fields
+# DB_CONNECTION_STRING=postgresql://username:password@localhost:5432/tcg_shopify
 
 # Session Configuration
-SESSION_SECRET=your-secret-key-here
-COOKIE_SECRET=your-cookie-secret-here
+COOKIE_SECRET=your_64_character_hex_secret_here
+COOKIE_NAME=tcg_session
+COOKIE_SECURED=false
+
+# Shopify Configuration
+SHOPIFY_API_KEY=your_shopify_api_key_here
+SHOPIFY_CLIENT_SECRET=your_shopify_client_secret_here
+SHOPIFY_HOST_NAME=your-app-domain.com
+
+# Redis Configuration
+REDIS_URL=redis://localhost:6379
+# Alternative: Use individual fields
+# REDIS_HOST=localhost
+# REDIS_PORT=6379
+# REDIS_PASSWORD=your_redis_password
+
+# Application Settings
+ALLOW_IFRAMES=true
 ```
 
 3. Run database migrations:
